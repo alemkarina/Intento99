@@ -1,10 +1,51 @@
-﻿<!doctype html>
+﻿<?php
+
+require_once 'controladores/funciones.php';
+
+//retorna un array de errores
+if ($_POST) {
+	$arrayDeErrores = validarRegistracion($_POST);
+	if ($arrayDeErrores) {
+		//Registro al usuario
+		$usuarioFinal = [
+			"username" => trim($_POST["username"]),
+			"email" => $_POST["email"],
+			"pass" => password_hash( $_POST["pass"], PASSWORD_DEFAULT )
+		];
+		//Enviar a la base de datos $usuarioFinal
+		$jsonDeUsuario = json_encode($usuarioFinal);
+		//              a donde escribo, lo que escribo, salto de linea, suma un nuevo usuario
+		file_put_contents('usuarios.json', $jsonDeUsuario . PHP_EOL, FILE_APPEND );
+		// *******************************************************************
+
+		//                   rescato la base de datos
+		$usuariosGuardados = file_get_contents('usuarios.json');
+		//                   corta el string a partir de php_eol y lo vuelve array asociativo
+		$explodeDeUsuarios = explode(PHP_EOL,$usuariosGuardados);
+		// arregla el array sacando el ultimo que es vacio
+		array_pop($explodeDeUsuarios);
+		//algo que no entendi
+		foreach ($explodeDeUsuarios as $usuario) {
+			$user = json_decode($usuario, true);
+			if($usuario["email"] == $_POST["email"]){
+				if (password_verify($_POST["pass"], $usuario["pass"])) {
+					header('Location: index.html');
+				}
+			}
+		}
+	}
+
+}
+
+?>
+
+<!doctype html>
 <!doctype html>
 <html class="no-js" lang="zxx">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>Avatar  | Mi cuenta</title>
+	<title>Avatar  | Inicio de Sesión</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -287,10 +328,46 @@
 				<!-- End Mobile Menu -->
 	            <div class="mobile-menu d-block d-lg-none">
 	            </div>
-	            <!-- Mobile Menu -->
-			</div>
+	            <!-- Mobile Menu -->	
+			</div>		
 		</header>
 		<!-- //Header -->
+		<!-- Start Search Popup -->
+		<div class="brown--color box-search-content search_active block-bg close__top">
+			<form id="search_mini_form" class="minisearch" action="#">
+				<div class="field__search">
+					<input type="text" placeholder="Search entire store here...">
+					<div class="action">
+						<a href="#"><i class="zmdi zmdi-search"></i></a>
+					</div>
+				</div>
+			</form>
+			<div class="close__wrap">
+				<span>close</span>
+			</div>
+		</div>
+		<!-- End Search Popup -->
+
+        	<!-- Start Single Slide 
+	        <div class="slide animation__style10 bg-image--7 fullscreen align__center--left">
+	            <div class="container">
+	            	<div class="row">
+	            		<div class="col-lg-12">
+	            			<div class="slider__content">
+		            			<div class="contentbox">
+		            				<h2>Buy <span>your </span></h2>
+		            				<h2>favourite <span>Book </span></h2>
+		            				<h2>from <span>Here </span></h2>
+				                   	<a class="shopbtn" href="#">shop now</a>
+		            			</div>
+	            			</div>
+	            		</div>
+	            	</div>
+	            </div>
+			</div>
+			--> 
+			<!-- End Single Slide -->		
+        </div>
 		<!-- Start Search Popup -->
 		<div class="box-search-content search_active block-bg close__top">
 			<form id="search_mini_form" class="minisearch" action="#">
@@ -312,11 +389,11 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="bradcaump__inner text-center">
-                        	<h2 class="bradcaump-title">Mi cuenta</h2>
+                        	<h2 class="bradcaump-title">Inicio de Sesión</h2>
                             <nav class="bradcaump-content">
                               <a class="breadcrumb_item" href="index.html">Inicio</a>
                               <span class="brd-separetor">/</span>
-                              <span class="breadcrumb_item active">Mi usuario</span>
+                              <span class="breadcrumb_item active">Mi cuenta</span>
                             </nav>
                         </div>
                     </div>
@@ -325,41 +402,57 @@
         </div>
         <!-- End Bradcaump area -->
 		<!-- Start My Account Area -->
-<<<<<<< HEAD
-		<div class="contenedor">
-            <div class="titulo"></div>
-            <div id="pestanas">
-                <ul id=lista>
-                    <li id="pestana1"><a href='javascript:cambiarPestanna(pestanas,pestana1);'>Mis datos</a>
-                    </li>
-                    <li id="pestana2"><a href='javascript:cambiarPestanna(pestanas,pestana2);'>Mis pedidos</a>
-                    </li>
-                    <li id="pestana3"><a href='javascript:cambiarPestanna(pestanas,pestana3);'>Mis Favoritos</a>
-                    </li>
-                    <li id="pestana4"><a href='javascript:cambiarPestanna(pestanas,pestana4);'>Cambios y devoluciones</a>
-                    </li>
-                    <li id="pestana5"><a href='javascript:cambiarPestanna(pestanas,pestana5);'>Mis créditos</a>
-                    </li>
-                    <li id="pestana6"><a href='javascript:cambiarPestanna(pestanas,pestana6);'>Direcciónes</a>
-                    </li>
-                </ul>
-            </div>
-            
-            <body onload="javascript:cambiarPestanna(pestanas,pestana6);">
-                <div id="contenidopestanas">
-                    <div id="cpestana1">
-						
-
+		<section class="my_account_area pt--80 pb--55 bg--white">
+			<div class="container">
+				<div class="row">
+                <div class="col-lg-6 col-12">
+						<div class="my__account__wrapper">
+							<h3 class="account__title">Logueate</h3>
+							<form action="#" method="post">
+								<div class="account__form">
+									<div class="input__box">
+										<label>Email <span>*</span></label>
+										<input type="email">
+									</div>
+									<div class="input__box">
+										<label>Clave<span>*</span></label>
+										<input type="password">
+									</div>
+									<div class="form__btn">
+										<button>Login</button>
+										<label class="label-for-checkbox">
+											<input id="rememberme" class="input-checkbox" name="rememberme" value="forever" type="checkbox">
+											<span>Recordarme</span>
+										</label>
+									</div>
+									<a class="forget_pass" href="#">No recuerdas tu clave?</a>
+								</div>
+							</form>
+						</div>
 					</div>
-                    <div id="cpestana2">El nombre hojas de estilo en cascada viene del inglés Cascading Style Sheets, del que toma sus siglas. CSS es un lenguaje usado para definir la presentación de un documento estructurado escrito en HTML o XML2 (y por extensión en XHTML). El W3C (World Wide Web Consortium) es el encargado de formular la especificación de las hojas de estilo que servirán de estándar para los agentes de usuario o navegadores.</div>
-                    <div id="cpestana3">JavaScript es un lenguaje de programación interpretado, dialecto del estándar ECMAScript. Se define como orientado a objetos,3 basado en prototipos, imperativo, débilmente tipado y dinámico.</div>
-                    <div id="cpestana4">PHP es un lenguaje de programación de uso general de script del lado del servidor originalmente diseñado para el desarrollo web de contenido dinámico. Fue uno de los primeros lenguajes de programación del lado del servidor que se podían incorporar directamente en el documento HTML en lugar de llamar a un archivo externo que procese los datos. El código es interpretado por un servidor web con un módulo de procesador de PHP que genera la página Web resultante. PHP ha evolucionado por lo que ahora incluye también una interfaz de línea de comandos que puede ser usada en aplicaciones gráficas independientes. PHP puede ser usado en la mayoría de los servidores web al igual que en casi todos los sistemas operativos y plataformas sin ningún costo.</div>
-                    <div id="cpestana5">Java Platform, Enterprise Edition o Java EE (anteriormente conocido como Java 2 Platform, Enterprise Edition o J2EE hasta la versión 1.4; traducido informalmente como Java Empresarial), es una plataforma de programación—parte de la Plataforma Java—para desarrollar y ejecutar software de aplicaciones en el lenguaje de programación Java. Permite utilizar arquitecturas de N capas distribuidas y se apoya ampliamente en componentes de software modulares ejecutándose sobre un servidor de aplicaciones. La plataforma Java EE está definida por una especificación. Similar a otras especificaciones del Java Community Process, Java EE es también considerada informalmente como un estándar debido a que los proveedores deben cumplir ciertos requisitos de conformidad para declarar que sus productos son conformes a Java EE; estandarizado por The Java Community Process / JCP.</div>
-                    <div id="cpestana6">Android es un sistema operativo móvil basado en Linux, que junto con aplicaciones middleware8 está enfocado para ser utilizado en dispositivos móviles como teléfonos inteligentes, tabletas, Google TV y otros dispositivos.9 Es desarrollado por la Open Handset Alliance, la cual es liderada por Google. Este sistema por lo general maneja aplicaciones como Google Play.</div>
-                </div>
-        </div>
-
-
+					<!--<div class="col-lg-6 col-12">
+						<div class="my__account__wrapper">
+							<h3 class="account__title">Register</h3>
+							<form action="#">
+								<div class="account__form">
+									<div class="input__box">
+										<label>Email address <span>*</span></label>
+										<input type="email">
+									</div>
+									<div class="input__box">
+										<label>Password<span>*</span></label>
+										<input type="password">
+									</div>
+									<div class="form__btn">
+										<button>Register</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>-->
+				</div>
+			</div>
+		</section>
 		<!-- End My Account Area -->
 		<!-- Footer Area -->
 		<footer id="wn__footer" class="footer__area bg__cat--8 brown--color">
@@ -416,7 +509,7 @@
 			</div>
 		</footer>
 		<!-- //Footer Area -->
-
+		
 	</div>
 	<!-- //Main wrapper -->
 
@@ -426,6 +519,6 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/plugins.js"></script>
 	<script src="js/active.js"></script>
-
+	
 </body>
 </html>

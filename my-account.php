@@ -1,10 +1,52 @@
+<?php
+
+require_once 'controladores/funciones.php';
+
+//retorna un array de errores
+if ($_POST) {
+	$arrayDeErrores = validarRegistracion($_POST);
+	if ($arrayDeErrores) {
+		//Registro al usuario
+		$usuarioFinal = [
+			"username" => trim($_POST["username"]),
+			"email" => $_POST["email"],
+			"pass" => password_hash( $_POST["pass"], PASSWORD_DEFAULT )
+		];
+		//Enviar a la base de datos $usuarioFinal
+		$jsonDeUsuario = json_encode($usuarioFinal);
+		//              a donde escribo, lo que escribo, salto de linea, suma un nuevo usuario
+		file_put_contents('usuarios.json', $jsonDeUsuario . PHP_EOL, FILE_APPEND );
+		// *******************************************************************
+
+		//                   rescato la base de datos
+		$usuariosGuardados = file_get_contents('usuarios.json');
+		//                   corta el string a partir de php_eol y lo vuelve array asociativo
+		$explodeDeUsuarios = explode(PHP_EOL,$usuariosGuardados);
+		// arregla el array sacando el ultimo que es vacio
+		array_pop($explodeDeUsuarios);
+		//algo que no entendi
+		foreach ($explodeDeUsuarios as $usuario) {
+			$user = json_decode($usuario, true);
+			if($usuario["email"] == $_POST["email"]){
+				if (password_verify($_POST["pass"], $usuario["pass"])) {
+					header('Location: index.html');
+				}
+			}
+		}
+	}
+
+}
+
+?>
+
+
+
 ﻿<!doctype html>
-<!doctype html>
 <html class="no-js" lang="zxx">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>Avatar  | Mi cuenta</title>
+	<title>My Account | Bookshop Responsive Bootstrap4 Template</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -13,9 +55,9 @@
 	<link rel="apple-touch-icon" href="images/icon.png">
 
 	<!-- Google font (font-family: 'Roboto', sans-serif; Poppins ; Satisfy) -->
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i,900" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,600,600i,700,700i,800" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
 
 	<!-- Stylesheets -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -36,58 +78,127 @@
 	<!-- Main wrapper -->
 	<div class="wrapper" id="wrapper">
 		<!-- Header -->
-		<header id="wn__header" class="header__area header__absolute sticky__header">
+		<header id="wn__header" class="oth-page header__area header__absolute sticky__header">
 			<div class="container-fluid">
 				<div class="row">
-					<div class="col-md-6 col-sm-6 col-6 col-lg-2">
+					<div class="col-md-4 col-sm-4 col-7 col-lg-2">
 						<div class="logo">
 							<a href="index.html">
-								<img src="images/logo/Logo90.png" alt="logo Avatar">
+								<img src="images/logo/logo.png" alt="logo images">
 							</a>
 						</div>
 					</div>
 					<div class="col-lg-8 d-none d-lg-block">
 						<nav class="mainmenu__nav">
 							<ul class="meninmenu d-flex justify-content-start">
-								<li class="drop with--one--item"><a href="index.html">Início</a></li>
-								<li class="drop"><a href="#">Comprar</a>
+								<li class="drop with--one--item"><a href="index.html">Home</a></li>
+								<li class="drop"><a href="#">Shop</a>
 									<div class="megamenu mega03">
 										<ul class="item item03">
-											<li class="title">Comunicate</li>
-											<li><a href="faq.html">Preguntas Frecuentas</a></li>
-											<li><a href="contact.html">Contactanos</a></li>
+											<li class="title">Shop Layout</li>
+											<li><a href="shop-grid.html">Shop Grid</a></li>
+											<li><a href="single-product.html">Single Product</a></li>
 										</ul>
 										<ul class="item item03">
-											<li class="title">Tienda</li>
-											<li><a href="my-account.html">Mi cuenta</a></li>
-											<li><a href="cart.html">Carrito</a></li>
-											<li><a href="checkout.html">Pagos</a></li>
-											<li><a href="wishlist.html">Mis favoritos</a></li>
-											<li><a href="faq.html">Preguntas frecuentes</a></li>
+											<li class="title">Shop Page</li>
+											<li><a href="my-account.html">My Account</a></li>
+											<li><a href="cart.html">Cart Page</a></li>
+											<li><a href="checkout.html">Checkout Page</a></li>
+											<li><a href="wishlist.html">Wishlist Page</a></li>
+											<li><a href="error404.html">404 Page</a></li>
+											<li><a href="faq.html">Faq Page</a></li>
 										</ul>
 										<ul class="item item03">
-											<li class="title">Outlet</li>
-											<li><a href="shop-grid.html">Smartwacht</a></li>
-											<li><a href="shop-grid.html">Accesorios</a></li>
+											<li class="title">Bargain Books</li>
+											<li><a href="shop-grid.html">Bargain Bestsellers</a></li>
+											<li><a href="shop-grid.html">Activity Kits</a></li>
+											<li><a href="shop-grid.html">B&N Classics</a></li>
+											<li><a href="shop-grid.html">Books Under $5</a></li>
+											<li><a href="shop-grid.html">Bargain Books</a></li>
 										</ul>
 									</div>
 								</li>
-								<li class="drop"><a href="shop-grid.html">Gift card</a>
+								<li class="drop"><a href="shop-grid.html">Books</a>
 									<div class="megamenu mega03">
 										<ul class="item item03">
-											<li class="title">regalos</li>
-											<li><a href="shop-grid.html">Mujer</a></li>
-											<li><a href="shop-grid.html">Hombre </a></li>
-											<li><a href="shop-grid.html">Niños </a></li>
-																				</ul>
-										
-									</div>																	
-							
-							
-							
-								</nav>
+											<li class="title">Categories</li>
+											<li><a href="shop-grid.html">Biography </a></li>
+											<li><a href="shop-grid.html">Business </a></li>
+											<li><a href="shop-grid.html">Cookbooks </a></li>
+											<li><a href="shop-grid.html">Health & Fitness </a></li>
+											<li><a href="shop-grid.html">History </a></li>
+										</ul>
+										<ul class="item item03">
+											<li class="title">Customer Favourite</li>
+											<li><a href="shop-grid.html">Mystery</a></li>
+											<li><a href="shop-grid.html">Religion & Inspiration</a></li>
+											<li><a href="shop-grid.html">Romance</a></li>
+											<li><a href="shop-grid.html">Fiction/Fantasy</a></li>
+											<li><a href="shop-grid.html">Sleeveless</a></li>
+										</ul>
+										<ul class="item item03">
+											<li class="title">Collections</li>
+											<li><a href="shop-grid.html">Science </a></li>
+											<li><a href="shop-grid.html">Fiction/Fantasy</a></li>
+											<li><a href="shop-grid.html">Self-Improvemen</a></li>
+											<li><a href="shop-grid.html">Home & Garden</a></li>
+											<li><a href="shop-grid.html">Humor Books</a></li>
+										</ul>
+									</div>
+								</li>
+								<li class="drop"><a href="shop-grid.html">Kids</a>
+									<div class="megamenu mega02">
+										<ul class="item item02">
+											<li class="title">Top Collections</li>
+											<li><a href="shop-grid.html">American Girl</a></li>
+											<li><a href="shop-grid.html">Diary Wimpy Kid</a></li>
+											<li><a href="shop-grid.html">Finding Dory</a></li>
+											<li><a href="shop-grid.html">Harry Potter</a></li>
+											<li><a href="shop-grid.html">Land of Stories</a></li>
+										</ul>
+										<ul class="item item02">
+											<li class="title">More For Kids</li>
+											<li><a href="shop-grid.html">B&N Educators</a></li>
+											<li><a href="shop-grid.html">B&N Kids' Club</a></li>
+											<li><a href="shop-grid.html">Kids' Music</a></li>
+											<li><a href="shop-grid.html">Toys & Games</a></li>
+											<li><a href="shop-grid.html">Hoodies</a></li>
+										</ul>
+									</div>
+								</li>
+								<li class="drop"><a href="#">Pages</a>
+									<div class="megamenu dropdown">
+										<ul class="item item01">
+											<li><a href="about.html">About Page</a></li>
+											<li class="label2"><a href="portfolio.html">Portfolio</a>
+												<ul>
+													<li><a href="portfolio.html">Portfolio</a></li>
+													<li><a href="portfolio-details.html">Portfolio Details</a></li>
+												</ul>
+											</li>
+											<li><a href="my-account.html">My Account</a></li>
+											<li><a href="cart.html">Cart Page</a></li>
+											<li><a href="checkout.html">Checkout Page</a></li>
+											<li><a href="wishlist.html">Wishlist Page</a></li>
+											<li><a href="error404.html">404 Page</a></li>
+											<li><a href="faq.html">Faq Page</a></li>
+											<li><a href="team.html">Team Page</a></li>
+										</ul>
+									</div>
+								</li>
+								<li class="drop"><a href="blog.html">Blog</a>
+									<div class="megamenu dropdown">
+										<ul class="item item01">
+											<li><a href="blog.html">Blog Page</a></li>
+											<li><a href="blog-details.html">Blog Details</a></li>
+										</ul>
+									</div>
+								</li>
+								<li><a href="contact.html">Contact</a></li>
+							</ul>
+						</nav>
 					</div>
-					<div class="col-md-6 col-sm-6 col-6 col-lg-2">
+					<div class="col-md-8 col-sm-8 col-5 col-lg-2">
 						<ul class="header__sidebar__right d-flex justify-content-end align-items-center">
 							<li class="shop_search"><a class="search__active" href="#"></a></li>
 							<li class="wishlist"><a href="#"></a></li>
@@ -96,23 +207,22 @@
 								<div class="block-minicart minicart__active">
 									<div class="minicart-content-wrapper">
 										<div class="micart__close">
-											<span>Agregá al carrito</span>
+											<span>close</span>
 										</div>
 										<div class="items-total d-flex justify-content-between">
-											<span>0 items</span>
-											<span>COSTO TOTAL</span>
+											<span>3 items</span>
+											<span>Cart Subtotal</span>
 										</div>
 										<div class="total_amount text-right">
-											<span>$0.00</span>
+											<span>$66.00</span>
 										</div>
 										<div class="mini_action checkout">
-											<a class="checkout__btn" href="cart.html">Pagá acá</a>
+											<a class="checkout__btn" href="cart.html">Go to Checkout</a>
 										</div>
 										<div class="single__items">
 											<div class="miniproduct">
 												<div class="item01 d-flex">
 													<div class="thumb">
-														<!-- Start Shopping Cart 
 														<a href="product-details.html"><img src="images/product/sm-img/1.jpg" alt="product images"></a>
 													</div>
 													<div class="content">
@@ -129,7 +239,7 @@
 												</div>
 												<div class="item01 d-flex mt--20">
 													<div class="thumb">
-														<a href="product-details.html"><img src="images/product/sm-img/3.jpg" alt="product images">"esto se borra"</a>
+														<a href="product-details.html"><img src="images/product/sm-img/3.jpg" alt="product images"></a>
 													</div>
 													<div class="content">
 														<h6><a href="product-details.html">Impulse Duffle</a></h6>
@@ -166,7 +276,6 @@
 										</div>
 									</div>
 								</div>
-								-->
 								<!-- End Shopping Cart -->
 							</li>
 							<li class="setting__bar__icon"><a class="setting__active" href="#"></a>
@@ -174,35 +283,34 @@
 									<div class="content-inner">
 										<div class="switcher-currency">
 											<strong class="label switcher-label">
-												<span>Moneda</span>
+												<span>Currency</span>
 											</strong>
 											<div class="switcher-options">
 												<div class="switcher-currency-trigger">
-													<span class="currency-trigger">AR$</span>
+													<span class="currency-trigger">USD - US Dollar</span>
 													<ul class="switcher-dropdown">
-														<li>AR$</li>
-														<li>Dolar</li>
+														<li>GBP - British Pound Sterling</li>
+														<li>EUR - Euro</li>
 													</ul>
 												</div>
 											</div>
 										</div>
 										<div class="switcher-currency">
 											<strong class="label switcher-label">
-												<span>Idioma</span>
+												<span>Language</span>
 											</strong>
 											<div class="switcher-options">
 												<div class="switcher-currency-trigger">
-													<span class="currency-trigger">Elegir</span>
+													<span class="currency-trigger">English01</span>
 													<ul class="switcher-dropdown">
-														<li>Español</li>
-														<li>Inglés</li>
-														<li>Portugues</li>
-																											</ul>
+														<li>English02</li>
+														<li>English03</li>
+														<li>English04</li>
+														<li>English05</li>
+													</ul>
 												</div>
-											<!-- End Shopping Cart 
 											</div>
 										</div>
-										
 										<div class="switcher-currency">
 											<strong class="label switcher-label">
 												<span>Select Store</span>
@@ -241,8 +349,7 @@
 						</ul>
 					</div>
 				</div>
-				-->	
-				<!-- Start Mobile Menu 
+				<!-- Start Mobile Menu -->
 				<div class="row d-none">
 					<div class="col-lg-12 d-none">
 						<nav class="mobilemenu__nav">
@@ -283,7 +390,6 @@
 						</nav>
 					</div>
 				</div>
-				-->
 				<!-- End Mobile Menu -->
 	            <div class="mobile-menu d-block d-lg-none">
 	            </div>
@@ -312,11 +418,11 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="bradcaump__inner text-center">
-                        	<h2 class="bradcaump-title">Mi cuenta</h2>
+                        	<h2 class="bradcaump-title">My Account</h2>
                             <nav class="bradcaump-content">
-                              <a class="breadcrumb_item" href="index.html">Inicio</a>
+                              <a class="breadcrumb_item" href="index.html">Home</a>
                               <span class="brd-separetor">/</span>
-                              <span class="breadcrumb_item active">Mi usuario</span>
+                              <span class="breadcrumb_item active">My Account</span>
                             </nav>
                         </div>
                     </div>
@@ -325,41 +431,74 @@
         </div>
         <!-- End Bradcaump area -->
 		<!-- Start My Account Area -->
-<<<<<<< HEAD
-		<div class="contenedor">
-            <div class="titulo"></div>
-            <div id="pestanas">
-                <ul id=lista>
-                    <li id="pestana1"><a href='javascript:cambiarPestanna(pestanas,pestana1);'>Mis datos</a>
-                    </li>
-                    <li id="pestana2"><a href='javascript:cambiarPestanna(pestanas,pestana2);'>Mis pedidos</a>
-                    </li>
-                    <li id="pestana3"><a href='javascript:cambiarPestanna(pestanas,pestana3);'>Mis Favoritos</a>
-                    </li>
-                    <li id="pestana4"><a href='javascript:cambiarPestanna(pestanas,pestana4);'>Cambios y devoluciones</a>
-                    </li>
-                    <li id="pestana5"><a href='javascript:cambiarPestanna(pestanas,pestana5);'>Mis créditos</a>
-                    </li>
-                    <li id="pestana6"><a href='javascript:cambiarPestanna(pestanas,pestana6);'>Direcciónes</a>
-                    </li>
-                </ul>
-            </div>
-            
-            <body onload="javascript:cambiarPestanna(pestanas,pestana6);">
-                <div id="contenidopestanas">
-                    <div id="cpestana1">
-						
-
+		<section class="my_account_area pt--80 pb--55 bg--white">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-6 col-12">
+						<div class="my__account__wrapper">
+							<h3 class="account__title">Login</h3>
+							<form action="#" method="post">
+								<div class="account__form">
+									<div class="input__box">
+										<label>Email address <span>*</span></label>
+										<input type="email">
+									</div>
+									<div class="input__box">
+										<label>Password<span>*</span></label>
+										<input type="password">
+									</div>
+									<div class="form__btn">
+										<button>Login</button>
+										<label class="label-for-checkbox">
+											<input id="rememberme" class="input-checkbox" name="rememberme" value="forever" type="checkbox">
+											<span>Remember me</span>
+										</label>
+									</div>
+									<a class="forget_pass" href="#">Lost your password?</a>
+								</div>
+							</form>
+						</div>
 					</div>
-                    <div id="cpestana2">El nombre hojas de estilo en cascada viene del inglés Cascading Style Sheets, del que toma sus siglas. CSS es un lenguaje usado para definir la presentación de un documento estructurado escrito en HTML o XML2 (y por extensión en XHTML). El W3C (World Wide Web Consortium) es el encargado de formular la especificación de las hojas de estilo que servirán de estándar para los agentes de usuario o navegadores.</div>
-                    <div id="cpestana3">JavaScript es un lenguaje de programación interpretado, dialecto del estándar ECMAScript. Se define como orientado a objetos,3 basado en prototipos, imperativo, débilmente tipado y dinámico.</div>
-                    <div id="cpestana4">PHP es un lenguaje de programación de uso general de script del lado del servidor originalmente diseñado para el desarrollo web de contenido dinámico. Fue uno de los primeros lenguajes de programación del lado del servidor que se podían incorporar directamente en el documento HTML en lugar de llamar a un archivo externo que procese los datos. El código es interpretado por un servidor web con un módulo de procesador de PHP que genera la página Web resultante. PHP ha evolucionado por lo que ahora incluye también una interfaz de línea de comandos que puede ser usada en aplicaciones gráficas independientes. PHP puede ser usado en la mayoría de los servidores web al igual que en casi todos los sistemas operativos y plataformas sin ningún costo.</div>
-                    <div id="cpestana5">Java Platform, Enterprise Edition o Java EE (anteriormente conocido como Java 2 Platform, Enterprise Edition o J2EE hasta la versión 1.4; traducido informalmente como Java Empresarial), es una plataforma de programación—parte de la Plataforma Java—para desarrollar y ejecutar software de aplicaciones en el lenguaje de programación Java. Permite utilizar arquitecturas de N capas distribuidas y se apoya ampliamente en componentes de software modulares ejecutándose sobre un servidor de aplicaciones. La plataforma Java EE está definida por una especificación. Similar a otras especificaciones del Java Community Process, Java EE es también considerada informalmente como un estándar debido a que los proveedores deben cumplir ciertos requisitos de conformidad para declarar que sus productos son conformes a Java EE; estandarizado por The Java Community Process / JCP.</div>
-                    <div id="cpestana6">Android es un sistema operativo móvil basado en Linux, que junto con aplicaciones middleware8 está enfocado para ser utilizado en dispositivos móviles como teléfonos inteligentes, tabletas, Google TV y otros dispositivos.9 Es desarrollado por la Open Handset Alliance, la cual es liderada por Google. Este sistema por lo general maneja aplicaciones como Google Play.</div>
-                </div>
-        </div>
+					<div class="col-lg-6 col-12">
+						<div class="my__account__wrapper">
+							<h3 class="account__title">Register</h3>
+							<form action="#" method="post">
+								<div class="account__form">
+									<div class="input__box">
+										<label for="username" >Username<span>*</span></label>
+										<input type="text" class="form-control" id="username" name="username">
+										<small><?= isset($arrayDeErrores["username"]) ? $arrayDeErrores["username"] : "" ?></small>
+									</div>
+									<div class="input__box">
+										<label for="email">Email address <span>*</span></label>
+										<input type="text" class="form-control" id="email" name="email" >
+										<small><?= isset($arrayDeErrores["email"]) ? $arrayDeErrores["email"] : "" ?></small>
+									</div>
+									<div class="input__box">
+										<label for="pass">Password<span>*</span></label>
+										<input type="password" class="form-control" id="pass" name="pass">
+										<small><?= isset($arrayDeErrores["pass"]) ? $arrayDeErrores["pass"] : "" ?></small>
+									</div>
+									<div class="input__box">
+										<label for="repass">Repeat password<span>*</span></label>
+										<input type="password" class="form-control" id="repass" name="repass">
+										<small><?= isset($arrayDeErrores["repass"]) ? $arrayDeErrores["repass"] : "" ?></small>
+									</div>
+									<div class="form__btn">
+										<button>Register</button>
+										<label class="label-for-checkbox">
+											<input id="rememberme" class="input-checkbox" name="rememberme" value="forever" type="checkbox">
+											<span>Remember me</span>
+										</label>
+									</div>
 
-
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 		<!-- End My Account Area -->
 		<!-- Footer Area -->
 		<footer id="wn__footer" class="footer__area bg__cat--8 brown--color">
@@ -370,9 +509,9 @@
 							<div class="footer__widget footer__menu">
 								<div class="ft__logo">
 									<a href="index.html">
-										<img src="images/logo/Logo90.png" alt="logo">
+										<img src="images/logo/3.png" alt="logo">
 									</a>
-									<p>Por cualquier duda puede dirigirse a <a href="">Términos y condiciones de uso del Sitio</a></p>
+									<p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered duskam alteration variations of passages</p>
 								</div>
 								<div class="footer__content">
 									<ul class="social__net social__net--2 d-flex justify-content-center">
@@ -383,12 +522,12 @@
 										<li><a href="#"><i class="bi bi-youtube"></i></a></li>
 									</ul>
 									<ul class="mainmenu d-flex justify-content-center">
-										<li><a href="inicio sesion.html">Loguin</a></li>
-										<li><a href="registro.html">Registrate</a></li>
-										<li><a href="index.html">Más vendidos</a></li>
-										<li><a href="shop-grid.html">Todos los productos</a></li>
-										<li><a href="faq.html">Preguntas Frecuentes</a></li>
-										<li><a href="contact.html">Contactanos</a></li>
+										<li><a href="index.html">Trending</a></li>
+										<li><a href="index.html">Best Seller</a></li>
+										<li><a href="index.html">All Product</a></li>
+										<li><a href="index.html">Wishlist</a></li>
+										<li><a href="index.html">Blog</a></li>
+										<li><a href="index.html">Contact</a></li>
 									</ul>
 								</div>
 							</div>
@@ -402,7 +541,7 @@
 						<div class="col-lg-6 col-md-6 col-sm-12">
 							<div class="copyright">
 								<div class="copy__right__inner text-left">
-									<p>Copyright <i class="fa fa-copyright"></i> <a href="">Avatar Company.</a> Todos los derechos reservados</p>
+									<p>Copyright <i class="fa fa-copyright"></i> <a href="https://freethemescloud.com/">Free themes Cloud.</a> All Rights Reserved</p>
 								</div>
 							</div>
 						</div>
