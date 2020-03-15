@@ -36,8 +36,26 @@ if ($_POST) {
 	}
 
 }
-?>
 
+?>
+<?php
+if ($_FILES)
+	if($_FILES[imagen]["error"] != 0){
+	echo "Hubo un error al cargar la imagen";
+}
+else {
+$ext = pathinfo($_FILES["imagen"]["name"],
+PATHINFO_EXTENSION);
+if ($ext != "jpg" && $ext != "jpeg" &&$ext != "png"){
+echo "La imagen debe ser jpg, jpeg o png <br>";
+}
+else {
+move_uploaded_file($_file["Imagen"]["temp_name"],
+"archivos\img." . $ext);
+}
+}
+
+?>
 <!doctype html>
 <!doctype html>
 <html class="no-js" lang="zxx">
@@ -61,7 +79,7 @@ if ($_POST) {
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/plugins.css">
 	<link rel="stylesheet" href="style.css">
-
+	<link rel="stylesheet" type="text/css" href="Vista/assets/css/overhang.min.css" />
 	<!-- Cusom css -->
    <link rel="stylesheet" href="css/custom.css">
 
@@ -432,30 +450,44 @@ if ($_POST) {
 					<div class="col-lg-6 col-12">
 						<div class="my__account__wrapper">
 							<h3 class="account__title">Registrate</h3>
-							<form action="#" method="post">
+							<form action="registroCode.php" method="post" role="form">
 								<div class="account__form">
 									<div class="input__box">
-										<label for="username" >Nombre de usuario<span>*</span></label>
-										<input type="text" class="form-control" id="username" name="username">
-										<small><?= isset($arrayDeErrores["username"]) ? $arrayDeErrores["username"] : "" ?></small>
+										<label for="nombre" >Nombre<span>*</span></label>
+										<input type="text" class="form-control" id="nombre" name="txtNombre" autofocus required placeholder="Ingresa tu nombre" >
+										<small><?= isset($arrayDeErrores["username"]) ? $arrayDeErrores["username"] : "" ?></small> //**Corregir */
 									</div>
 									<div class="input__box">
-										<label for="email">Email <span>*</span></label>
-										<input type="text" class="form-control" id="email" name="email" >
+										<label for="email">E-mail <span>*</span></label>
+										<input type="email" class="form-control" id="email" name="txtEmail" require placeholder="Ingresa tu dirección de e-mail">
 										<small><?= isset($arrayDeErrores["email"]) ? $arrayDeErrores["email"] : "" ?></small>
 									</div>
 									<div class="input__box">
-										<label for="pass">Clave<span>*</span></label>
-										<input type="password" class="form-control" id="pass" name="pass">
-										<small><?= isset($arrayDeErrores["pass"]) ? $arrayDeErrores["pass"] : "" ?></small>
+										<label for="usuario" >Usuario<span>*</span></label>
+										<input type="text" class="form-control" id="usuario" name="txtUsuario" autofocus required placeholder="usuario" >
+										<small><?= isset($arrayDeErrores["username"]) ? $arrayDeErrores["username"] : "" ?></small> 
+									</div>
+
+
+									<div class="input__box">
+										<label for="password">Password<span>*</span></label>
+										<input type="password" class="form-control" id="password" name="txtPassword" require placeholder="****">
+										<small><?= isset($arrayDeErrores["password"]) ? $arrayDeErrores["password"] : "" ?></small> //**Corregir */  
 									</div>
 									<div class="input__box">
 										<label for="repass">Repetir Clave<span>*</span></label>
 										<input type="password" class="form-control" id="repass" name="repass">
 										<small><?= isset($arrayDeErrores["repass"]) ? $arrayDeErrores["repass"] : "" ?></small>
 									</div>
-									<div class="form__btn">
-										<button>Register</button>
+									<div class="form-group">
+										<label for="Imagen">Adjuntar jpg,jpeg o png</label>
+										<input type="file" name="Imagen" value="">
+										<p class="help-block"></p>
+									  </div>
+										</div>
+										
+											<button type="submit" class="btn btn-success">Registrate</button>
+
 										<label class="label-for-checkbox">
 											<input id="rememberme" class="input-checkbox" name="rememberme" value="forever" type="checkbox">
 											<span>Recordarme</span>
@@ -535,6 +567,10 @@ if ($_POST) {
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/plugins.js"></script>
 	<script src="js/active.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript" src="Vista/assets/Js/overhang.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
 	
 </body>
 </html>

@@ -1,45 +1,26 @@
 ﻿<?php
 
 require_once 'controladores/funciones.php';
-
+$arrayDeErrores = "";
 //retorna un array de errores
 if ($_POST) {
 	$arrayDeErrores = validarRegistracion($_POST);
 	if ($arrayDeErrores) {
-		//Registro al usuario
-		$usuarioFinal = [
-			"username" => trim($_POST["username"]),
-			"email" => $_POST["email"],
-			"pass" => password_hash( $_POST["pass"], PASSWORD_DEFAULT )
-		];
-		//Enviar a la base de datos $usuarioFinal
-		$jsonDeUsuario = json_encode($usuarioFinal);
-		//              a donde escribo, lo que escribo, salto de linea, suma un nuevo usuario
-		file_put_contents('usuarios.json', $jsonDeUsuario . PHP_EOL, FILE_APPEND );
-		// *******************************************************************
-
-		//                   rescato la base de datos
-		$usuariosGuardados = file_get_contents('usuarios.json');
-		//                   corta el string a partir de php_eol y lo vuelve array asociativo
-		$explodeDeUsuarios = explode(PHP_EOL,$usuariosGuardados);
-		// arregla el array sacando el ultimo que es vacio
-		array_pop($explodeDeUsuarios);
-		//algo que no entendi
-		foreach ($explodeDeUsuarios as $usuario) {
-			$user = json_decode($usuario, true);
-			if($usuario["email"] == $_POST["email"]){
-				if (password_verify($_POST["pass"], $usuario["pass"])) {
-					header('Location: index.html');
+		// Logueo al usuario
+		//obtengo el contenido del json
+		$arrayDeUsuarios = abrirBBDD("usuarios.json");
+		foreach ($arrayDeUsuarios as $usuarioJson) {
+			$userFinal = json_decode($usuarioJson, true);
+			if ($_POST["email"] == $userFinal["email"]) {
+				if (password_verify($_POST["pass"], $userFinal["pass"])) {
+					header("Location: index.html");
+		
 				}
 			}
 		}
-	}
-
-}
-
+		}
+	 }
 ?>
-
-<!doctype html>
 <!doctype html>
 <html class="no-js" lang="zxx">
 <head>
@@ -62,6 +43,8 @@ if ($_POST) {
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/plugins.css">
 	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" type="text/css" href="Vista/assets/css/overhang.min.css" />
+	
 
 	<!-- Cusom css -->
    <link rel="stylesheet" href="css/custom.css">
@@ -333,19 +316,7 @@ if ($_POST) {
 		</header>
 		<!-- //Header -->
 		<!-- Start Search Popup -->
-		<div class="brown--color box-search-content search_active block-bg close__top">
-			<form id="search_mini_form" class="minisearch" action="#">
-				<div class="field__search">
-					<input type="text" placeholder="Search entire store here...">
-					<div class="action">
-						<a href="#"><i class="zmdi zmdi-search"></i></a>
-					</div>
-				</div>
-			</form>
-			<div class="close__wrap">
-				<span>close</span>
-			</div>
-		</div>
+
 		<!-- End Search Popup -->
 
         	<!-- Start Single Slide 
@@ -401,58 +372,39 @@ if ($_POST) {
             </div>
         </div>
         <!-- End Bradcaump area -->
+		<br>
+<br>
+<br>
+<br>
+		<section>
 		<!-- Start My Account Area -->
-		<section class="my_account_area pt--80 pb--55 bg--white">
-			<div class="container">
-				<div class="row">
-                <div class="col-lg-6 col-12">
-						<div class="my__account__wrapper">
-							<h3 class="account__title">Logueate</h3>
-							<form action="#" method="post">
-								<div class="account__form">
-									<div class="input__box">
-										<label>Email <span>*</span></label>
-										<input type="email">
-									</div>
-									<div class="input__box">
-										<label>Clave<span>*</span></label>
-										<input type="password">
-									</div>
-									<div class="form__btn">
-										<button>Login</button>
-										<label class="label-for-checkbox">
-											<input id="rememberme" class="input-checkbox" name="rememberme" value="forever" type="checkbox">
-											<span>Recordarme</span>
-										</label>
-									</div>
-									<a class="forget_pass" href="#">No recuerdas tu clave?</a>
-								</div>
-							</form>
-						</div>
-					</div>
-					<!--<div class="col-lg-6 col-12">
-						<div class="my__account__wrapper">
-							<h3 class="account__title">Register</h3>
-							<form action="#">
-								<div class="account__form">
-									<div class="input__box">
-										<label>Email address <span>*</span></label>
-										<input type="email">
-									</div>
-									<div class="input__box">
-										<label>Password<span>*</span></label>
-										<input type="password">
-									</div>
-									<div class="form__btn">
-										<button>Register</button>
-									</div>
-								</div>
-							</form>
-						</div>
-					</div>-->
-				</div>
-			</div>
-		</section>
+<div class="row">
+<div class="col-md-4 col-md-offset-4">
+<div class="panel panel-default">
+<div class="panel-body">
+<form action="Entidades/validarCode.php" method="POST" role="form">
+<legend>Iniciar Sesión </legend>
+
+<div class="form-group">
+<label for="usuario">Usuario</label>
+<input type="text" name="txtUsuario" class="form-control" id="usuario" autofocuss placeholder="usuario">
+</div>
+
+<div class="form-group">
+<label for="password">Password</label>
+<input type="password" name="txtPassword" class="form-control" id="password" placeholder="****">
+</div>
+
+<button type="submit" class="btn- btn-success">
+Ingresar </button>
+</form>
+<br>
+<br>
+<br>
+<br>
+<br>
+</section>
+
 		<!-- End My Account Area -->
 		<!-- Footer Area -->
 		<footer id="wn__footer" class="footer__area bg__cat--8 brown--color">
@@ -519,6 +471,10 @@ if ($_POST) {
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/plugins.js"></script>
 	<script src="js/active.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript" src="Vista/assets/Js/overhang.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
 	
-</body>
+	</body>
 </html>
